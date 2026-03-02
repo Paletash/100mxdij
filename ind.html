@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2GM1 Dijeron – Modelo Multifactorial</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #7B1D46;
+    --gold: #F5C842;
+    --green: #5a0f30;
+    --dark: #1a0a12;
+    --light: #FFF8EE;
+    --blue: #2a0d1e;
+    --accent: #C0185E;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(123,29,70,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(245,200,66,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 60% 80%, rgba(90,15,48,0.2) 0%, transparent 40%);
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 20px 10px 10px;
+    position: relative;
+  }
+  .title-wrap {
+    display: inline-block;
+    position: relative;
+  }
+  .title-top {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 7vw, 5rem);
+    color: var(--gold);
+    text-shadow: 4px 4px 0 var(--red), 8px 8px 0 rgba(0,0,0,0.3);
+    letter-spacing: 4px;
+    line-height: 1;
+  }
+  .title-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.8rem, 2.5vw, 1.4rem);
+    color: var(--green);
+    letter-spacing: 6px;
+    background: var(--gold);
+    color: var(--dark);
+    padding: 3px 20px;
+    margin-top: 6px;
+    display: block;
+    border-radius: 4px;
+  }
+  .decoration {
+    font-size: 1.4rem;
+    margin: 0 8px;
+    vertical-align: middle;
+  }
+
+  /* SCOREBOARD */
+  .scoreboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 14px;
+    max-width: 700px;
+    margin: 0 auto 10px;
+  }
+  .team-score {
+    background: linear-gradient(135deg, #7B1D46, #4a0d2b);
+    border-radius: 16px;
+    padding: 14px 28px;
+    text-align: center;
+    flex: 1;
+    border: 3px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 30px rgba(123,29,70,0.4);
+    transition: transform 0.3s;
+  }
+  .team-score.team2 {
+    background: linear-gradient(135deg, #5a0f30, #3a0820);
+    box-shadow: 0 8px 30px rgba(90,15,48,0.4);
+  }
+  .team-score.active-team {
+    transform: scale(1.06);
+    border-color: var(--gold);
+    box-shadow: 0 0 30px var(--gold);
+  }
+  .team-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2px;
+  }
+  .team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: white;
+    letter-spacing: 2px;
+  }
+  .team-points {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+  }
+  .vs-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  }
+
+  /* MAIN GAME AREA */
+  .game-area {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 12px 30px;
+  }
+
+  /* QUESTION BOX */
+  .question-panel {
+    background: linear-gradient(135deg, #2a0d1e, #1a0a12);
+    border: 3px solid var(--gold);
+    border-radius: 18px;
+    padding: 20px 24px;
+    text-align: center;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 40px rgba(247,183,49,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .question-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 30px,
+      rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 31px
+    );
+  }
+  .q-number {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 4px;
+    opacity: 0.7;
+    margin-bottom: 6px;
+  }
+  .question-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.2rem, 4vw, 2rem);
+    color: white;
+    letter-spacing: 2px;
+    line-height: 1.3;
+    position: relative;
+  }
+
+  /* ANSWER BOARD */
+  .answer-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .answer-card {
+    background: linear-gradient(135deg, #2a0d1e, #1a0a12);
+    border: 2px solid #5a1f3a;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    min-height: 68px;
+  }
+  .answer-card.revealed {
+    background: linear-gradient(135deg, #7B1D46, #55132f);
+    border-color: var(--gold);
+    box-shadow: 0 4px 20px rgba(123,29,70,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    animation: revealPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes revealPop {
+    0% { transform: scale(0.8) rotateX(30deg); opacity: 0; }
+    60% { transform: scale(1.05) rotateX(-5deg); }
+    100% { transform: scale(1) rotateX(0deg); opacity: 1; }
+  }
+  .ans-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    min-width: 36px;
+    text-align: center;
+    background: rgba(247,183,49,0.15);
+    border-radius: 8px;
+    padding: 4px 8px;
+    line-height: 1;
+  }
+  .ans-text {
+    font-weight: 700;
+    color: white;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex: 1;
+    display: none;
+  }
+  .ans-dots {
+    flex: 1;
+    text-align: center;
+    letter-spacing: 6px;
+    color: rgba(255,255,255,0.3);
+    font-size: 1.2rem;
+  }
+  .answer-card.revealed .ans-text { display: block; }
+  .answer-card.revealed .ans-dots { display: none; }
+  .ans-pts {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    display: none;
+  }
+  .answer-card.revealed .ans-pts { display: block; }
+
+  /* X MARKS */
+  .x-marks {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .x-mark {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: transparent;
+    transition: all 0.3s;
+  }
+  .x-mark.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+    box-shadow: 0 0 20px rgba(214,40,40,0.7);
+    animation: xPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes xPop {
+    0% { transform: scale(0) rotate(-45deg); }
+    60% { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  /* INPUT AREA */
+  .input-area {
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .input-label {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .turn-indicator {
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .input-row {
+    display: flex;
+    gap: 10px;
+  }
+  input[type="text"] {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    outline: none;
+    transition: border-color 0.3s;
+    text-transform: uppercase;
+  }
+  input[type="text"]::placeholder { color: rgba(255,255,255,0.3); text-transform: none; }
+  input[type="text"]:focus { border-color: var(--gold); }
+  input[type="text"]:disabled { opacity: 0.5; }
+
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-guess {
+    background: linear-gradient(135deg, var(--gold), #d4950f);
+    color: var(--dark);
+  }
+  .btn-guess:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(247,183,49,0.4); }
+  .btn-guess:active { transform: translateY(0); }
+  .btn-pass {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+  .btn-pass:hover { background: rgba(255,255,255,0.18); color: white; }
+
+  /* STEAL BANNER */
+  .steal-banner {
+    background: linear-gradient(135deg, #C0185E, #7B1D46);
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+    animation: pulse 1s infinite alternate;
+    display: none;
+  }
+  .steal-banner.visible { display: block; }
+  @keyframes pulse {
+    from { box-shadow: 0 0 15px rgba(255,107,53,0.5); }
+    to { box-shadow: 0 0 35px rgba(255,107,53,0.9); }
+  }
+  .steal-banner p {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: white;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+  .steal-banner small {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
+  }
+
+  /* ROUND POT */
+  .pot-area {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .pot-label {
+    font-family: 'Bebas Neue', sans-serif;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+  }
+  .pot-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--gold);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    line-height: 1;
+  }
+
+  /* FEEDBACK TOAST */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--green);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 3px;
+    padding: 14px 32px;
+    border-radius: 50px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .toast.wrong { background: var(--red); }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* BUTTONS ROW */
+  .action-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .btn-next {
+    background: linear-gradient(135deg, #7B1D46, #4a0d2b);
+    color: white;
+    flex: 1;
+    display: none;
+  }
+  .btn-next.visible { display: block; }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(123,29,70,0.5); }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.08);
+    border-radius: 50px;
+    height: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7B1D46, var(--gold));
+    border-radius: 50px;
+    transition: width 0.5s ease;
+  }
+
+  /* OVERLAY / END SCREEN */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 500;
+    justify-content: center;
+    align-items: center;
+  }
+  .overlay.show { display: flex; }
+  .end-card {
+    background: linear-gradient(135deg, var(--blue), var(--dark));
+    border: 4px solid var(--gold);
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+    max-width: 460px;
+    width: 90%;
+    box-shadow: 0 20px 80px rgba(247,183,49,0.3);
+    animation: revealPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .end-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-shadow: 3px 3px 0 var(--red);
+    margin-bottom: 10px;
+  }
+  .winner-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: white;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+  .final-scores {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .final-score-box {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 24px;
+    flex: 1;
+  }
+  .final-score-box .fn { font-weight: 900; color: white; margin-bottom: 4px; }
+  .final-score-box .fp {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .btn-restart {
+    background: linear-gradient(135deg, var(--gold), #d4950f);
+    color: var(--dark);
+    font-size: 1.4rem;
+    padding: 14px 40px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 3px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .btn-restart:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(247,183,49,0.4); }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -20px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    z-index: 600;
+    pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* SETUP SCREEN */
+  .setup-screen {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  .setup-screen h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+  .setup-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 16px;
+  }
+  .setup-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  .setup-row label {
+    color: var(--gold);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    min-width: 80px;
+    text-align: left;
+  }
+  .setup-row input {
+    flex: 1;
+  }
+  .btn-start {
+    background: linear-gradient(135deg, var(--gold), #d4950f);
+    color: var(--dark);
+    font-size: 1.6rem;
+    padding: 16px;
+    width: 100%;
+    letter-spacing: 3px;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(247,183,49,0.5); }
+  .setup-note {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+
+  .hidden { display: none !important; }
+
+  /* ANSWERING WRONG SHAKE */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  .shake { animation: shake 0.5s ease; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-wrap">
+    <div class="title-top">
+      <span class="decoration">🦅</span> 2GM1 Dijeron <span class="decoration">🦅</span>
+    </div>
+    <span class="title-sub">✦ Edición: Modelo Multifactorial de Liderazgo ✦</span>
+  </div>
+</header>
+
+<!-- SETUP SCREEN -->
+<div class="setup-screen" id="setupScreen">
+  <h2>¿Listos para jugar?</h2>
+  <div class="setup-card">
+    <div class="setup-row">
+      <label>EQUIPO 1</label>
+      <input type="text" id="team1Name" placeholder="Ej: Los Transformadores" maxlength="22">
+    </div>
+    <div class="setup-row">
+      <label>EQUIPO 2</label>
+      <input type="text" id="team2Name" placeholder="Ej: Los Transaccionales" maxlength="22">
+    </div>
+  </div>
+  <button class="btn btn-start" onclick="startGame()">¡A JUGAR!</button>
+  <p class="setup-note">Que gane el mejor.</p>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" class="hidden">
+  <!-- SCOREBOARD -->
+  <div class="scoreboard">
+    <div class="team-score" id="scoreCard1">
+      <div class="team-label">EQUIPO</div>
+      <div class="team-name" id="scoreLabel1">Equipo 1</div>
+      <div class="team-points" id="score1">0</div>
+    </div>
+    <div class="vs-badge">VS</div>
+    <div class="team-score team2" id="scoreCard2">
+      <div class="team-label">EQUIPO</div>
+      <div class="team-name" id="scoreLabel2">Equipo 2</div>
+      <div class="team-points" id="score2">0</div>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <!-- PROGRESS -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <!-- QUESTION -->
+    <div class="question-panel">
+      <div class="q-number" id="qNumber">PREGUNTA 1 DE 7</div>
+      <div class="question-text" id="questionText">...</div>
+    </div>
+
+    <!-- POT -->
+    <div class="pot-area">
+      <div class="pot-label">PUNTOS EN JUEGO</div>
+      <div class="pot-value" id="potValue">0</div>
+    </div>
+
+    <!-- X MARKS -->
+    <div class="x-marks" id="xMarks">
+      <div class="x-mark" id="x1">✕</div>
+      <div class="x-mark" id="x2">✕</div>
+      <div class="x-mark" id="x3">✕</div>
+    </div>
+
+    <!-- ANSWER BOARD -->
+    <div class="answer-board" id="answerBoard"></div>
+
+    <!-- STEAL BANNER -->
+    <div class="steal-banner" id="stealBanner">
+      <p>⚡ ¡ROBA LA RONDA!</p>
+      <small id="stealTeamName">El otro equipo puede adivinar una respuesta</small>
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-area" id="inputArea">
+      <div class="input-label">TU RESPUESTA</div>
+      <div class="turn-indicator" id="turnIndicator"></div>
+      <div class="input-row">
+        <input type="text" id="answerInput" placeholder="Escribe tu respuesta..." autocomplete="off">
+        <button class="btn btn-guess" onclick="submitGuess()">RESPONDER</button>
+        <button class="btn btn-pass" onclick="passTurn()" id="passBtn">PASAR</button>
+      </div>
+    </div>
+
+    <!-- NEXT / STEAL BUTTON -->
+    <div class="action-btns">
+      <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">SIGUIENTE PREGUNTA ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Respuesta correcta!</div>
+
+<!-- END OVERLAY -->
+<div class="overlay" id="endOverlay">
+  <div class="end-card">
+    <div class="end-title">🏆 ¡FIN DEL JUEGO!</div>
+    <div class="winner-name" id="winnerName">¡Ganador!</div>
+    <div class="final-scores">
+      <div class="final-score-box">
+        <div class="fn" id="finalName1">Equipo 1</div>
+        <div class="fp" id="finalScore1">0</div>
+      </div>
+      <div class="final-score-box">
+        <div class="fn" id="finalName2">Equipo 2</div>
+        <div class="fp" id="finalScore2">0</div>
+      </div>
+    </div>
+    <button class="btn-restart" onclick="restartGame()">🔄 JUGAR DE NUEVO</button>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const questions = [
+  {
+    q: "¿Cuáles son los tipos de liderazgo que incluye el Modelo FRLM de Bass?",
+    answers: [
+      { text: "Transformacional", pts: 45, keys: ["transformacional","transformador","transformacion"] },
+      { text: "Transaccional", pts: 35, keys: ["transaccional","transaccion"] },
+      { text: "Laissez-faire", pts: 20, keys: ["laissez","laissez-faire","laissez faire","pasivo","abstencionista"] }
+    ]
+  },
+  {
+    q: "¿En qué se basa el intercambio del líder transaccional con sus seguidores?",
+    answers: [
+      { text: "Recompensas", pts: 40, keys: ["recompensa","recompensas","premio","premios","incentivo","incentivos"] },
+      { text: "Castigos", pts: 35, keys: ["castigo","castigos","sancion","sanciones","penalizacion"] },
+      { text: "Cumplimiento de tareas", pts: 25, keys: ["tareas","tarea","cumplimiento","metas","objetivos"] }
+    ]
+  },
+  {
+    q: "¿Qué resultados psicológicos produce el liderazgo transformacional en los empleados?",
+    answers: [
+      { text: "Confianza", pts: 30, keys: ["confianza"] },
+      { text: "Lealtad", pts: 25, keys: ["lealtad","leal"] },
+      { text: "Compromiso", pts: 22, keys: ["compromiso","comprometido"] },
+      { text: "Autoconfianza / Optimismo", pts: 13, keys: ["autoconfianza","auto confianza","optimismo","optimista","seguridad"] },
+      { text: "Admiración y Respeto", pts: 10, keys: ["admiracion","admiro","respeto","respeto"] }
+    ]
+  },
+  {
+    q: "¿Qué necesidades satisface el liderazgo transformacional según la jerarquía de Maslow?",
+    answers: [
+      { text: "Autorrealización", pts: 40, keys: ["autorealizacion","autorrealización","autorealizacion","realizacion","realizacion personal"] },
+      { text: "Logro personal", pts: 35, keys: ["logro","logros","alcanzar metas"] },
+      { text: "Crecimiento personal", pts: 25, keys: ["crecimiento","crecimiento personal","desarrollo","superacion"] }
+    ]
+  },
+  {
+    q: "¿Cómo orienta el modelo transformacional a sus empleados?",
+    answers: [
+      { text: "Autonomía e innovación", pts: 38, keys: ["autonomia","innovacion","creatividad","autonomía","innovar"] },
+      { text: "Compromiso colectivo / Visión compartida", pts: 35, keys: ["colectivo","vision colectiva","vision compartida","grupo","equipo","bien comun"] },
+      { text: "Desarrollo personal / Mentoría", pts: 27, keys: ["desarrollo","mentoria","mentor","mentoring","coaching","coach","entrenador","individual"] }
+    ]
+  },
+  {
+    q: "¿En qué teoría se apoya el liderazgo transaccional?",
+    answers: [
+      { text: "Teoría del Refuerzo", pts: 50, keys: ["refuerzo","teoria del refuerzo","behaviorismo","conductismo"] },
+      { text: "Administración Científica (Taylor)", pts: 50, keys: ["taylor","administracion cientifica","cientifico","frederick taylor","taylor"] }
+    ]
+  },
+  {
+    q: "¿Qué resultados de rendimiento genera el Modelo Multifactorial?",
+    answers: [
+      { text: "Rendimiento extraordinario", pts: 40, keys: ["extraordinario","excepcional","extraordinaria","rendimiento extraordinario","más allá","mas alla"] },
+      { text: "Eficacia organizacional", pts: 35, keys: ["eficacia","eficiencia","organizacional","eficaz","productividad","productivo"] },
+      { text: "Esfuerzo extra de los empleados", pts: 25, keys: ["esfuerzo","extra","esfuerzo extra","mayor esfuerzo","adicional"] }
+    ]
+  }
+];
+
+// ===================== STATE =====================
+let state = {};
+
+function initState(t1, t2) {
+  state = {
+    teams: [t1, t2],
+    scores: [0, 0],
+    currentQ: 0,
+    currentTeam: 0, // 0 or 1
+    strikes: 0,
+    stealPhase: false,
+    revealed: [],
+    roundPot: 0,
+    totalQuestions: questions.length,
+    answered: false
+  };
+}
+
+// ===================== NORMALIZATION =====================
+function normalize(str) {
+  return str.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim();
+}
+
+function checkAnswer(input) {
+  const norm = normalize(input);
+  const q = questions[state.currentQ];
+  for (let i = 0; i < q.answers.length; i++) {
+    if (state.revealed.includes(i)) continue;
+    for (const key of q.answers[i].keys) {
+      if (norm.includes(normalize(key)) || normalize(key).includes(norm) && norm.length > 3) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+// ===================== UI HELPERS =====================
+function showToast(msg, wrong = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast' + (wrong ? ' wrong' : '');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function updateScores() {
+  document.getElementById('score1').textContent = state.scores[0];
+  document.getElementById('score2').textContent = state.scores[1];
+  // Active team highlight
+  document.getElementById('scoreCard1').classList.toggle('active-team', state.currentTeam === 0 && !state.answered);
+  document.getElementById('scoreCard2').classList.toggle('active-team', state.currentTeam === 1 && !state.answered);
+}
+
+function updateStrikes() {
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('x' + i).classList.toggle('active', i <= state.strikes);
+  }
+}
+
+function renderBoard() {
+  const q = questions[state.currentQ];
+  const board = document.getElementById('answerBoard');
+  board.innerHTML = '';
+  let pot = 0;
+  q.answers.forEach((ans, i) => {
+    const revealed = state.revealed.includes(i);
+    if (revealed) pot += ans.pts;
+    const card = document.createElement('div');
+    card.className = 'answer-card' + (revealed ? ' revealed' : '');
+    card.innerHTML = `
+      <div class="ans-num">${i + 1}</div>
+      <div class="ans-text">${ans.text}</div>
+      <div class="ans-dots">• • •</div>
+      <div class="ans-pts">${ans.pts}</div>
+    `;
+    board.appendChild(card);
+  });
+  state.roundPot = pot;
+  document.getElementById('potValue').textContent = pot;
+  // Progress
+  const pct = ((state.currentQ) / state.totalQuestions) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('qNumber').textContent = `PREGUNTA ${state.currentQ + 1} DE ${state.totalQuestions}`;
+  document.getElementById('questionText').textContent = q.q;
+}
+
+function updateTurnIndicator() {
+  const el = document.getElementById('turnIndicator');
+  if (state.stealPhase) {
+    el.textContent = `🔥 ${state.teams[state.currentTeam].toUpperCase()} – UNA OPORTUNIDAD PARA ROBAR`;
+  } else {
+    el.textContent = `▶ Turno de: ${state.teams[state.currentTeam].toUpperCase()}`;
+  }
+}
+
+function allRevealed() {
+  return state.revealed.length === questions[state.currentQ].answers.length;
+}
+
+// ===================== GAME LOGIC =====================
+function startGame() {
+  const t1 = document.getElementById('team1Name').value.trim() || 'Equipo 1';
+  const t2 = document.getElementById('team2Name').value.trim() || 'Equipo 2';
+  initState(t1, t2);
+
+  document.getElementById('scoreLabel1').textContent = t1;
+  document.getElementById('scoreLabel2').textContent = t2;
+  document.getElementById('score1').textContent = 0;
+  document.getElementById('score2').textContent = 0;
+
+  document.getElementById('setupScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+
+  loadQuestion();
+}
+
+function loadQuestion() {
+  state.strikes = 0;
+  state.revealed = [];
+  state.stealPhase = false;
+  state.answered = false;
+
+  document.getElementById('stealBanner').classList.remove('visible');
+  document.getElementById('nextBtn').classList.remove('visible');
+  document.getElementById('inputArea').style.opacity = '1';
+  document.getElementById('answerInput').disabled = false;
+  document.getElementById('passBtn').disabled = false;
+
+  updateStrikes();
+  renderBoard();
+  updateScores();
+  updateTurnIndicator();
+  document.getElementById('answerInput').value = '';
+  document.getElementById('answerInput').focus();
+}
+
+function submitGuess() {
+  const inp = document.getElementById('answerInput');
+  const val = inp.value.trim();
+  if (!val) return;
+
+  const idx = checkAnswer(val);
+  inp.value = '';
+
+  if (idx >= 0) {
+    // Correct!
+    state.revealed.push(idx);
+    renderBoard();
+    const pts = questions[state.currentQ].answers[idx].pts;
+    showToast(`✅ ¡CORRECTO! +${pts} pts`);
+
+    if (allRevealed()) {
+      // Give all points to current team
+      const total = questions[state.currentQ].answers.reduce((s, a) => s + a.pts, 0);
+      state.scores[state.currentTeam] += total;
+      updateScores();
+      setTimeout(endRound, 600);
+    }
+  } else {
+    // Wrong
+    if (!state.stealPhase) {
+      state.strikes++;
+      updateStrikes();
+      showToast('❌ ¡No está en la lista!', true);
+      document.getElementById('answerInput').closest('.input-area').classList.add('shake');
+      setTimeout(() => document.getElementById('answerInput').closest('.input-area').classList.remove('shake'), 500);
+
+      if (state.strikes >= 3) {
+        triggerSteal();
+      }
+    } else {
+      // Steal failed
+      showToast('❌ ¡Robo fallido!', true);
+      const otherTeam = 1 - state.currentTeam;
+      state.scores[otherTeam] += state.roundPot;
+      updateScores();
+      setTimeout(endRound, 600);
+    }
+  }
+  inp.focus();
+}
+
+function passTurn() {
+  if (state.stealPhase) {
+    // Passing steal = other team gets points
+    const otherTeam = 1 - state.currentTeam;
+    state.scores[otherTeam] += state.roundPot;
+    updateScores();
+    endRound();
+    return;
+  }
+  // Switch turn between teams (before 3 strikes, teams alternate guesses if desired)
+  // For simplicity: passing counts as a strike
+  state.strikes++;
+  updateStrikes();
+  showToast('⏭ Turno pasado', true);
+  if (state.strikes >= 3) {
+    triggerSteal();
+  } else {
+    state.currentTeam = 1 - state.currentTeam;
+    updateTurnIndicator();
+    updateScores();
+  }
+}
+
+function triggerSteal() {
+  const stealTeam = 1 - state.currentTeam;
+  state.currentTeam = stealTeam;
+  state.stealPhase = true;
+  document.getElementById('stealBanner').classList.add('visible');
+  document.getElementById('stealTeamName').textContent = `${state.teams[stealTeam].toUpperCase()} tiene UNA oportunidad de robar`;
+  document.getElementById('passBtn').textContent = 'PASAR ROBO';
+  updateTurnIndicator();
+  updateScores();
+}
+
+function endRound() {
+  state.answered = true;
+  // Reveal all remaining answers
+  const q = questions[state.currentQ];
+  q.answers.forEach((_, i) => {
+    if (!state.revealed.includes(i)) state.revealed.push(i);
+  });
+  renderBoard();
+  document.getElementById('inputArea').style.opacity = '0.4';
+  document.getElementById('answerInput').disabled = true;
+  document.getElementById('passBtn').disabled = true;
+  document.getElementById('stealBanner').classList.remove('visible');
+  updateScores();
+  updateStrikes();
+
+  if (state.currentQ + 1 >= state.totalQuestions) {
+    document.getElementById('nextBtn').textContent = 'VER RESULTADOS FINALES 🏆';
+  } else {
+    document.getElementById('nextBtn').textContent = 'SIGUIENTE PREGUNTA ▶';
+  }
+  document.getElementById('nextBtn').classList.add('visible');
+}
+
+function nextQuestion() {
+  state.currentQ++;
+  if (state.currentQ >= state.totalQuestions) {
+    showEndScreen();
+    return;
+  }
+  // Alternate starting team each round
+  state.currentTeam = state.currentQ % 2;
+  loadQuestion();
+}
+
+// ===================== END SCREEN =====================
+function showEndScreen() {
+  const t1 = state.teams[0], t2 = state.teams[1];
+  const s1 = state.scores[0], s2 = state.scores[1];
+  document.getElementById('finalName1').textContent = t1;
+  document.getElementById('finalName2').textContent = t2;
+  document.getElementById('finalScore1').textContent = s1;
+  document.getElementById('finalScore2').textContent = s2;
+
+  let winner;
+  if (s1 > s2) winner = `🎉 ¡${t1} GANA!`;
+  else if (s2 > s1) winner = `🎉 ¡${t2} GANA!`;
+  else winner = '🤝 ¡EMPATE!';
+
+  document.getElementById('winnerName').textContent = winner;
+  document.getElementById('endOverlay').classList.add('show');
+  launchConfetti();
+}
+
+function restartGame() {
+  document.getElementById('endOverlay').classList.remove('show');
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('setupScreen').classList.remove('hidden');
+}
+
+// ===================== CONFETTI =====================
+function launchConfetti() {
+  const colors = ['#7B1D46','#F5C842','#C0185E','#ffffff','#5a0f30','#f0a500'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.width = (Math.random() * 10 + 6) + 'px';
+    el.style.height = (Math.random() * 10 + 6) + 'px';
+    el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    el.style.animationDelay = (Math.random() * 1) + 's';
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+// ===================== KEYBOARD =====================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const nextBtn = document.getElementById('nextBtn');
+    const inp = document.getElementById('answerInput');
+    if (nextBtn.classList.contains('visible')) {
+      nextQuestion();
+    } else if (!inp.disabled) {
+      submitGuess();
+    }
+  }
+});
+</script>
+</body>
+</html>
