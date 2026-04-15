@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>100 Mexicanos Dijeron</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700;900&display=swap"
+    rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    :root {
+      --gold: #F5C842;
+      --red: #D62828;
+      --green: #2D6A4F;
+      --dark: #0f050a;
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="config-btn" onclick="toggleConfigModal()" title="Configurar juego">⚙️</button>
+
+  <header>
+    <div class="title-wrap">
+      <div class="title-top">
+        <span id="displayMainTitle">2GM1 Dijeron</span>
+      </div>
+      <span class="title-sub" id="displaySubTitle">✦ Edición: Modelo Multifactorial de Liderazgo ✦</span>
+    </div>
+  </header>
+
+  <!-- SETUP SCREEN -->
+  <div class="setup-screen" id="setupScreen">
+    <h2>¿Listos para jugar?</h2>
+    <div class="setup-card">
+      <div class="setup-row">
+        <label>EQUIPO 1</label>
+        <input type="text" id="team1Name" placeholder="Ej: Eq 1" maxlength="22">
+      </div>
+      <div class="setup-row">
+        <label>EQUIPO 2</label>
+        <input type="text" id="team2Name" placeholder="Ej: Eq 2" maxlength="22">
+      </div>
+    </div>
+    <button class="btn btn-start" onclick="startGame()">¡A JUGAR!</button>
+    <p class="setup-note">Andres Herrera.</p>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="gameScreen" class="hidden">
+    <!-- SCOREBOARD -->
+    <div class="scoreboard">
+      <div class="team-score" id="scoreCard1">
+        <div class="team-label">EQUIPO</div>
+        <div class="team-name" id="scoreLabel1">Equipo 1</div>
+        <div class="team-points" id="score1">0</div>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="team-score team2" id="scoreCard2">
+        <div class="team-label">EQUIPO</div>
+        <div class="team-name" id="scoreLabel2">Equipo 2</div>
+        <div class="team-points" id="score2">0</div>
+      </div>
+    </div>
+
+    <div class="game-area">
+      <!-- PROGRESS -->
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+      </div>
+
+      <!-- QUESTION -->
+      <div class="question-panel">
+        <div class="q-number" id="qNumber">PREGUNTA 1 DE 7</div>
+        <div class="question-text" id="questionText">...</div>
+      </div>
+
+      <!-- POT -->
+      <div class="pot-area">
+        <div class="pot-label">PUNTOS EN JUEGO</div>
+        <div class="pot-value" id="potValue">0</div>
+      </div>
+
+      <!-- X MARKS -->
+      <div class="x-marks" id="xMarks">
+        <div class="x-mark" id="x1">✕</div>
+        <div class="x-mark" id="x2">✕</div>
+        <div class="x-mark" id="x3">✕</div>
+      </div>
+
+      <!-- ANSWER BOARD -->
+      <div class="answer-board" id="answerBoard"></div>
+
+      <!-- STEAL BANNER -->
+      <div class="steal-banner" id="stealBanner">
+        <p>⚡ ¡ROBA LA RONDA!</p>
+        <small id="stealTeamName">El otro equipo puede adivinar una respuesta</small>
+      </div>
+
+      <!-- INPUT -->
+      <div class="input-area" id="inputArea">
+        <div class="input-label">TU RESPUESTA</div>
+        <div class="turn-indicator" id="turnIndicator"></div>
+        <div class="input-row">
+          <input type="text" id="answerInput" placeholder="Escribe tu respuesta..." autocomplete="off">
+          <button class="btn btn-guess" onclick="submitGuess()">RESPONDER</button>
+          <button class="btn btn-pass" onclick="passTurn()" id="passBtn">PASAR</button>
+        </div>
+      </div>
+
+      <!-- NEXT / STEAL BUTTON -->
+      <div class="action-btns">
+        <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">SIGUIENTE PREGUNTA ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">Respuesta correcta!</div>
+
+  <!-- END OVERLAY -->
+  <div class="overlay" id="endOverlay">
+    <div class="end-card">
+      <div class="end-title">🏆 ¡FIN DEL JUEGO!</div>
+      <div class="winner-name" id="winnerName">¡Ganador!</div>
+      <div class="final-scores">
+        <div class="final-score-box">
+          <div class="fn" id="finalName1">Equipo 1</div>
+          <div class="fp" id="finalScore1">0</div>
+        </div>
+        <div class="final-score-box">
+          <div class="fn" id="finalName2">Equipo 2</div>
+          <div class="fp" id="finalScore2">0</div>
+        </div>
+      </div>
+      <button class="btn-restart" onclick="restartGame()">🔄 JUGAR DE NUEVO</button>
+    </div>
+  </div>
+
+  <!-- CONFIG MODAL -->
+  <div class="modal-config" id="configModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="toggleConfigModal()">✕</button>
+      <div class="modal-title">CONFIGURACIÓN DEL JUEGO</div>
+
+      <div class="import-export-row">
+        <button class="btn btn-action btn-guess" onclick="exportConfig()"> EXPORTAR .JSON</button>
+        <button class="btn btn-action btn-next" style="display:block"
+          onclick="document.getElementById('fileInput').click()"> IMPORTAR .JSON</button>
+        <input type="file" id="fileInput" hidden accept=".json" onchange="importConfig(event)">
+      </div>
+
+      <div class="config-group">
+        <label>TÍTULO PRINCIPAL</label>
+        <input type="text" id="configMainTitle">
+      </div>
+      <div class="config-group">
+        <label>SUBTÍTULO / EDICIÓN</label>
+        <input type="text" id="configSubTitle">
+      </div>
+      <div class="config-group">
+        <label>PREGUNTAS Y RESPUESTAS (JSON) <span id="questionsCountBadge"
+            style="font-size: 0.8rem; color: var(--gold); margin-left: 10px; font-weight: bold;"></span></label>
+        <textarea id="configQuestionsJSON" oninput="updateJSONCount()"
+          placeholder='[{"q": "Pregunta", "answers": [{"text": "A", "pts": 10, "keys": ["a"]}]}]'></textarea>
+        <p style="font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 5px;">
+          * Edita con cuidado el formato JSON para evitar errores.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="resetToDefault()">RESTABLECER</button>
+        <button class="btn btn-guess" onclick="saveConfig()">GUARDAR Y REINICIAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lógica -->
+  <script src="assets/script.js" defer></script>
+
+</body>
+
+</html>
