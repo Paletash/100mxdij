@@ -1,0 +1,30 @@
+{
+  "name": "100mxdij",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.paletash.100mxdij",
+    "productName": "100 Mexicanos Dijeron",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Paletash/100mxdij/issues"
+  },
+  "homepage": "https://github.com/Paletash/100mxdij#readme",
+  "devDependencies": {
+    "electron": "^41.2.1",
+    "electron-builder": "^26.8.1"
+  }
+}

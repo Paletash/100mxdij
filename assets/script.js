@@ -1,7 +1,7 @@
 // ===================== DATA =====================
 const DEFAULT_CONFIG = {
   mainTitle: "2GM1 Dijeron",
-  subTitle: "✦ Edición: Modelo Multifactorial de Liderazgo ✦",
+  subTitle: "<i data-lucide='sparkles' class='decoration'></i> Edición: Modelo Multifactorial de Liderazgo <i data-lucide='sparkles' class='decoration'></i>",
   questions: [
     {
       q: "¿Cuáles son los tipos de liderazgo que incluye el Modelo FRLM de Bass?",
@@ -60,7 +60,14 @@ const DEFAULT_CONFIG = {
         { text: "Esfuerzo extra de los empleados", pts: 25, keys: ["esfuerzo","extra","esfuerzo extra","mayor esfuerzo","adicional"] }
       ]
     }
-  ]
+  ],
+  colors: {
+    gold: "#F5C842",
+    red: "#D62828",
+    green: "#2D6A4F",
+    dark: "#0f050a",
+    accent: "#C0185E"
+  }
 };
 
 let gameConfig = JSON.parse(localStorage.getItem('mxDijeronConfig')) || DEFAULT_CONFIG;
@@ -75,7 +82,17 @@ function toggleConfigModal() {
     document.getElementById('configMainTitle').value = gameConfig.mainTitle;
     document.getElementById('configSubTitle').value = gameConfig.subTitle;
     document.getElementById('configQuestionsJSON').value = JSON.stringify(gameConfig.questions, null, 2);
+    
+    // Set colors in inputs
+    const colors = gameConfig.colors || DEFAULT_CONFIG.colors;
+    document.getElementById('configColorGold').value = colors.gold;
+    document.getElementById('configColorDark').value = colors.dark;
+    document.getElementById('configColorAccent').value = colors.accent;
+    document.getElementById('configColorRed').value = colors.red;
+    document.getElementById('configColorGreen').value = colors.green;
+
     updateJSONCount();
+    lucide.createIcons();
   }
 }
 
@@ -104,8 +121,17 @@ function saveConfig() {
     gameConfig.subTitle = document.getElementById('configSubTitle').value.trim() || DEFAULT_CONFIG.subTitle;
     gameConfig.questions = newQuestions;
     
+    // Save colors
+    gameConfig.colors = {
+      gold: document.getElementById('configColorGold').value,
+      dark: document.getElementById('configColorDark').value,
+      accent: document.getElementById('configColorAccent').value,
+      red: document.getElementById('configColorRed').value,
+      green: document.getElementById('configColorGreen').value
+    };
+    
     localStorage.setItem('mxDijeronConfig', JSON.stringify(gameConfig));
-    showToast("💾 ¡CAMBIOS GUARDADOS!");
+    showToast("<i data-lucide='save' style='margin-right:10px'></i> ¡CAMBIOS GUARDADOS!");
     
     // Refresh UI and Restart
     setTimeout(() => location.reload(), 1000);
@@ -155,7 +181,21 @@ function importConfig(event) {
 
 // Actualizar títulos al cargar
 document.getElementById('displayMainTitle').textContent = gameConfig.mainTitle;
-document.getElementById('displaySubTitle').textContent = gameConfig.subTitle;
+document.getElementById('displaySubTitle').innerHTML = gameConfig.subTitle;
+
+// Aplicar colores
+function applyColors() {
+  const colors = gameConfig.colors || DEFAULT_CONFIG.colors;
+  const root = document.documentElement;
+  root.style.setProperty('--gold', colors.gold);
+  root.style.setProperty('--dark', colors.dark);
+  root.style.setProperty('--accent', colors.accent);
+  root.style.setProperty('--red', colors.red);
+  root.style.setProperty('--green', colors.green);
+}
+applyColors();
+
+lucide.createIcons();
 
 // ===================== STATE =====================
 let state = {};
@@ -200,9 +240,10 @@ function checkAnswer(input) {
 // ===================== UI HELPERS =====================
 function showToast(msg, wrong = false) {
   const toast = document.getElementById('toast');
-  toast.textContent = msg;
+  toast.innerHTML = msg;
   toast.className = 'toast' + (wrong ? ' wrong' : '');
   toast.classList.add('show');
+  lucide.createIcons();
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
@@ -218,6 +259,7 @@ function updateStrikes() {
   for (let i = 1; i <= 3; i++) {
     document.getElementById('x' + i).classList.toggle('active', i <= state.strikes);
   }
+  lucide.createIcons();
 }
 
 function renderBoard() {
@@ -250,10 +292,11 @@ function renderBoard() {
 function updateTurnIndicator() {
   const el = document.getElementById('turnIndicator');
   if (state.stealPhase) {
-    el.textContent = `🔥 ${state.teams[state.currentTeam].toUpperCase()} – UNA OPORTUNIDAD PARA ROBAR`;
+    el.innerHTML = `<i data-lucide='zap'></i> ${state.teams[state.currentTeam].toUpperCase()} – UNA OPORTUNIDAD PARA ROBAR`;
   } else {
-    el.textContent = `▶ Turno de: ${state.teams[state.currentTeam].toUpperCase()}`;
+    el.innerHTML = `<i data-lucide='play'></i> Turno de: ${state.teams[state.currentTeam].toUpperCase()}`;
   }
+  lucide.createIcons();
 }
 
 function allRevealed() {
@@ -310,7 +353,7 @@ function submitGuess() {
     state.revealed.push(idx);
     renderBoard();
     const pts = questions[state.currentQ].answers[idx].pts;
-    showToast(`✅ ¡CORRECTO! +${pts} pts`);
+    showToast(`<i data-lucide='check-circle' style='margin-right:10px'></i> ¡CORRECTO! +${pts} pts`);
 
     if (allRevealed()) {
       // Give all points to current team
@@ -324,7 +367,7 @@ function submitGuess() {
     if (!state.stealPhase) {
       state.strikes++;
       updateStrikes();
-      showToast('❌ ¡No está en la lista!', true);
+      showToast('<i data-lucide="alert-circle" style="margin-right:10px"></i> ¡No está en la lista!', true);
       document.getElementById('answerInput').closest('.input-area').classList.add('shake');
       setTimeout(() => document.getElementById('answerInput').closest('.input-area').classList.remove('shake'), 500);
 
@@ -333,7 +376,7 @@ function submitGuess() {
       }
     } else {
       // Steal failed
-      showToast('❌ ¡Robo fallido!', true);
+      showToast('<i data-lucide="x-circle" style="margin-right:10px"></i> ¡Robo fallido!', true);
       const otherTeam = 1 - state.currentTeam;
       state.scores[otherTeam] += state.roundPot;
       updateScores();
@@ -356,7 +399,7 @@ function passTurn() {
   // For simplicity: passing counts as a strike
   state.strikes++;
   updateStrikes();
-  showToast('⏭ Turno pasado', true);
+  showToast('<i data-lucide="skip-forward" style="margin-right:10px"></i> Turno pasado', true);
   if (state.strikes >= 3) {
     triggerSteal();
   } else {
@@ -393,11 +436,12 @@ function endRound() {
   updateStrikes();
 
   if (state.currentQ + 1 >= state.totalQuestions) {
-    document.getElementById('nextBtn').textContent = 'VER RESULTADOS FINALES 🏆';
+    document.getElementById('nextBtn').innerHTML = 'VER RESULTADOS FINALES <i data-lucide="trophy"></i>';
   } else {
-    document.getElementById('nextBtn').textContent = 'SIGUIENTE PREGUNTA ▶';
+    document.getElementById('nextBtn').innerHTML = 'SIGUIENTE PREGUNTA <i data-lucide="arrow-right"></i>';
   }
   document.getElementById('nextBtn').classList.add('visible');
+  lucide.createIcons();
 }
 
 function nextQuestion() {
@@ -421,12 +465,13 @@ function showEndScreen() {
   document.getElementById('finalScore2').textContent = s2;
 
   let winner;
-  if (s1 > s2) winner = `🎉 ¡${t1} GANA!`;
-  else if (s2 > s1) winner = `🎉 ¡${t2} GANA!`;
-  else winner = '🤝 ¡EMPATE!';
+  if (s1 > s2) winner = `<i data-lucide="party-popper"></i> ¡${t1} GANA!`;
+  else if (s2 > s1) winner = `<i data-lucide="party-popper"></i> ¡${t2} GANA!`;
+  else winner = '<i data-lucide="handshake"></i> ¡EMPATE!';
 
-  document.getElementById('winnerName').textContent = winner;
+  document.getElementById('winnerName').innerHTML = winner;
   document.getElementById('endOverlay').classList.add('show');
+  lucide.createIcons();
   launchConfetti();
 }
 

@@ -7,34 +7,64 @@
   <title>100 Mexicanos Dijeron</title>
 
   <!-- Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700;900&display=swap"
-    rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
 
   <!-- Estilos -->
   <link rel="stylesheet" href="assets/style.css">
 
-  <style>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style id="dynamicColors">
     :root {
       --gold: #F5C842;
       --red: #D62828;
       --green: #2D6A4F;
       --dark: #0f050a;
+      --accent: #C0185E;
+    }
+  </style>
+
+  <style>
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .color-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .color-item label {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+    input[type="color"] {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      padding: 2px;
     }
   </style>
 </head>
 
 <body>
 
-  <button class="config-btn" onclick="toggleConfigModal()" title="Configurar juego">⚙️</button>
+  <button class="config-btn" onclick="toggleConfigModal()" title="Configurar juego">
+    <i data-lucide="settings"></i>
+  </button>
 
   <header>
     <div class="title-wrap">
       <div class="title-top">
         <span id="displayMainTitle">2GM1 Dijeron</span>
       </div>
-      <span class="title-sub" id="displaySubTitle">✦ Edición: Modelo Multifactorial de Liderazgo ✦</span>
+      <span class="title-sub" id="displaySubTitle"><i data-lucide="sparkles" class="decoration"></i> Edición: Modelo Multifactorial de Liderazgo <i data-lucide="sparkles" class="decoration"></i></span>
     </div>
   </header>
 
@@ -92,9 +122,9 @@
 
       <!-- X MARKS -->
       <div class="x-marks" id="xMarks">
-        <div class="x-mark" id="x1">✕</div>
-        <div class="x-mark" id="x2">✕</div>
-        <div class="x-mark" id="x3">✕</div>
+        <div class="x-mark" id="x1"><i data-lucide="x"></i></div>
+        <div class="x-mark" id="x2"><i data-lucide="x"></i></div>
+        <div class="x-mark" id="x3"><i data-lucide="x"></i></div>
       </div>
 
       <!-- ANSWER BOARD -->
@@ -102,7 +132,7 @@
 
       <!-- STEAL BANNER -->
       <div class="steal-banner" id="stealBanner">
-        <p>⚡ ¡ROBA LA RONDA!</p>
+        <p><i data-lucide="zap"></i> ¡ROBA LA RONDA!</p>
         <small id="stealTeamName">El otro equipo puede adivinar una respuesta</small>
       </div>
 
@@ -119,7 +149,7 @@
 
       <!-- NEXT / STEAL BUTTON -->
       <div class="action-btns">
-        <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">SIGUIENTE PREGUNTA ▶</button>
+        <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">SIGUIENTE PREGUNTA <i data-lucide="arrow-right"></i></button>
       </div>
     </div>
   </div>
@@ -130,7 +160,7 @@
   <!-- END OVERLAY -->
   <div class="overlay" id="endOverlay">
     <div class="end-card">
-      <div class="end-title">🏆 ¡FIN DEL JUEGO!</div>
+      <div class="end-title"><i data-lucide="trophy"></i> ¡FIN DEL JUEGO!</div>
       <div class="winner-name" id="winnerName">¡Ganador!</div>
       <div class="final-scores">
         <div class="final-score-box">
@@ -142,20 +172,20 @@
           <div class="fp" id="finalScore2">0</div>
         </div>
       </div>
-      <button class="btn-restart" onclick="restartGame()">🔄 JUGAR DE NUEVO</button>
+      <button class="btn-restart" onclick="restartGame()"><i data-lucide="rotate-ccw"></i> JUGAR DE NUEVO</button>
     </div>
   </div>
 
   <!-- CONFIG MODAL -->
   <div class="modal-config" id="configModal">
     <div class="modal-content">
-      <button class="modal-close" onclick="toggleConfigModal()">✕</button>
+      <button class="modal-close" onclick="toggleConfigModal()"><i data-lucide="x"></i></button>
       <div class="modal-title">CONFIGURACIÓN DEL JUEGO</div>
 
       <div class="import-export-row">
-        <button class="btn btn-action btn-guess" onclick="exportConfig()"> EXPORTAR .JSON</button>
+        <button class="btn btn-action btn-guess" onclick="exportConfig()"><i data-lucide="download"></i> EXPORTAR .JSON</button>
         <button class="btn btn-action btn-next" style="display:block"
-          onclick="document.getElementById('fileInput').click()"> IMPORTAR .JSON</button>
+          onclick="document.getElementById('fileInput').click()"><i data-lucide="upload"></i> IMPORTAR .JSON</button>
         <input type="file" id="fileInput" hidden accept=".json" onchange="importConfig(event)">
       </div>
 
@@ -175,6 +205,30 @@
         <p style="font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 5px;">
           * Edita con cuidado el formato JSON para evitar errores.
         </p>
+      <div class="config-group">
+        <label>COLORES DEL TEMA</label>
+        <div class="color-grid">
+          <div class="color-item">
+            <label>PRIMARIO (ORO)</label>
+            <input type="color" id="configColorGold">
+          </div>
+          <div class="color-item">
+            <label>FONDO (OSCURO)</label>
+            <input type="color" id="configColorDark">
+          </div>
+          <div class="color-item">
+            <label>ACENTO (ROSA)</label>
+            <input type="color" id="configColorAccent">
+          </div>
+          <div class="color-item">
+            <label>ERRORES (ROJO)</label>
+            <input type="color" id="configColorRed">
+          </div>
+          <div class="color-item">
+            <label>ACIERTOS (VERDE)</label>
+            <input type="color" id="configColorGreen">
+          </div>
+        </div>
       </div>
 
       <div class="modal-footer">
