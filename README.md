@@ -1,6 +1,6 @@
 # 🇲🇽 100 Mexicanos Dijeron - Simulador de Juego
 
-¡Bienvenido al simulador definitivo de **100 Mexicanos Dijeron**! Este proyecto es una aplicación web interactiva (compatible con Electron para ejecutarse como aplicación de escritorio) diseñada para hospedar y dirigir un show de concurso real con amigos, familiares o en eventos académicos/laborales.
+¡Bienvenido al simulador definitivo de **100 Mexicanos Dijeron**! Este proyecto es una aplicación web interactiva (compatible con Electron para ejecutarse como aplicación de escritorio) diseñada para eventos académicos/laborales.
 
 La aplicación cuenta con efectos de sonido programados, un cronómetro de tensión, un buscador inteligente de respuestas con corrector de acentos y un épico modo final de **Dinero Rápido** con pantalla dual.
 
