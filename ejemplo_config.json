@@ -1,0 +1,78 @@
+{
+  "mainTitle": "Ejemplo de Configuración",
+  "subTitle": "<i data-lucide='sparkles'></i> Con Normalización Completa <i data-lucide='sparkles'></i>",
+  "questions": [
+    {
+      "q": "¿Cuál es la capital de México?",
+      "answers": [
+        {
+          "text": "Ciudad de México",
+          "pts": 50,
+          "keys": ["ciudad de mexico", "cdmx", "méxico", "mexico", "capital"]
+        },
+        {
+          "text": "Guadalajara",
+          "pts": 30,
+          "keys": ["guadalajara"]
+        },
+        {
+          "text": "Monterrey",
+          "pts": 20,
+          "keys": ["monterrey"]
+        }
+      ]
+    },
+    {
+      "q": "¿Qué es la normalización de texto?",
+      "answers": [
+        {
+          "text": "Estandarizar formato",
+          "pts": 45,
+          "keys": ["estandarizar", "formato", "estándar", "estandar", "normalizar"]
+        },
+        {
+          "text": "Eliminar acentos",
+          "pts": 40,
+          "keys": ["acentos", "acento", "diacríticos", "diacriticos"]
+        },
+        {
+          "text": "Convertir a minúsculas",
+          "pts": 35,
+          "keys": ["minúsculas", "minusculas", "minúscula", "minuscula", "lowercase"]
+        },
+        {
+          "text": "Reducir espacios",
+          "pts": 25,
+          "keys": ["espacios", "espacio", "espacios múltiples", "espacios multiples"]
+        }
+      ]
+    },
+    {
+      "q": "¿Cuáles son los beneficios de la normalización?",
+      "answers": [
+        {
+          "text": "Mayor precisión en búsquedas",
+          "pts": 40,
+          "keys": ["precisión", "precision", "búsquedas", "busquedas", "exactitud"]
+        },
+        {
+          "text": "Mejor experiencia del usuario",
+          "pts": 35,
+          "keys": ["experiencia", "usuario", "usabilidad", "interfaz"]
+        },
+        {
+          "text": "Reducción de errores",
+          "pts": 30,
+          "keys": ["errores", "error", "reducción", "reduccion", "minimiza"]
+        }
+      ]
+    }
+  ],
+  "colors": {
+    "gold": "#F5C842",
+    "red": "#D62828",
+    "green": "#2D6A4F",
+    "dark": "#0f050a",
+    "accent": "#C0185E"
+  }
+}
